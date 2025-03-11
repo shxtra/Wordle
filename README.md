@@ -1,0 +1,2 @@
+# Wordle
+try
