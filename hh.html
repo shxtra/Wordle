@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEAM 5</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('background.jpg');
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            display: inline-block;
+            border-radius: 10px;
+        }
+        input {
+            display: block;
+            width: 60%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        button {
+            display: block;
+            width: 40%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: green;
+            color: white;
+        }
+        .letter-box {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            font-size: 24px;
+            text-align: center;
+            line-height: 40px;
+            border: 2px solid white;
+        }
+        .correct { background-color: green; }
+        .present { background-color: yellow; }
+        .absent { background-color: gray; }
+        #nextWordBtn { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Backup Wordle Game</h1>
+        <p>Guess the backup-related word!</p>
+        <p id="hint"><strong>Hint:</strong> <span id="currentHint"></span></p>
+        <div id="wordDisplay"></div>
+        <input type="text" id="wordInput" placeholder="Enter a word" maxlength="6" oninput="validateInput(this)">
+        <button id="submitBtn" onclick="checkWord()">Submit</button>
+        <p id="result"></p>
+        <button id="nextWordBtn" onclick="nextWord()">Next Word</button>
+    </div>
+
+    <script>
+        const wordsWithHints = [
+            { word: "BACKUP", hint: "A copy of important data for recovery." },
+            { word: "CLOUDS", hint: "A storage solution on the internet." },
+            { word: "SERVER", hint: "A system that manages network resources." },
+            { word: "SAFETY", hint: "What backups provide to your data." },
+            { word: "SYSTEM", hint: "A structured set of components working together." }
+        ];
+        
+        let currentIndex = 0;
+        let selectedWordData = wordsWithHints[currentIndex];
+        let secretWord = selectedWordData.word;
+        document.getElementById("currentHint").innerText = selectedWordData.hint;
+        let attempts = 5;
+
+        function validateInput(input) {
+            input.value = input.value.replace(/[^a-zA-Z]/g, '').toUpperCase(); 
+        }
+
+        function checkWord() {
+            let userWord = document.getElementById("wordInput").value.trim().toUpperCase();
+            let inputField = document.getElementById("wordInput");
+            let submitButton = document.getElementById("submitBtn");
+
+            if (userWord.length !== 6) {
+                document.getElementById("result").innerText = "Please enter exactly 6 letters!";
+                return;
+            }
+
+            let wordDisplay = document.createElement("div");
+            for (let i = 0; i < secretWord.length; i++) {
+                let letterBox = document.createElement("span");
+                letterBox.classList.add("letter-box");
+                letterBox.innerText = userWord[i] || " ";
+
+                if (userWord[i] === secretWord[i]) {
+                    letterBox.classList.add("correct");
+                } else if (secretWord.includes(userWord[i])) {
+                    letterBox.classList.add("present");
+                } else {
+                    letterBox.classList.add("absent");
+                }
+                wordDisplay.appendChild(letterBox);
+            }
+            document.getElementById("wordDisplay").appendChild(wordDisplay);
+
+            attempts--;
+
+            if (userWord === secretWord) {
+                document.getElementById("result").innerText = "May tama ka! Click Next Word to continue.";
+                document.getElementById("nextWordBtn").style.display = "block";
+                inputField.style.display = "none";  
+                submitButton.style.display = "none";  
+            } else if (attempts === 0) {
+                document.getElementById("result").innerText = "Engk! The word was " + secretWord;
+                document.getElementById("nextWordBtn").style.display = "block";
+                inputField.style.display = "none";  
+                submitButton.style.display = "none";  
+            }
+
+            document.getElementById("wordInput").value = "";
+        }
+
+        function nextWord() {
+            currentIndex++;
+            if (currentIndex < wordsWithHints.length) {
+                selectedWordData = wordsWithHints[currentIndex];
+                secretWord = selectedWordData.word;
+                document.getElementById("currentHint").innerText = selectedWordData.hint;
+                document.getElementById("wordDisplay").innerHTML = "";
+                attempts = 5;
+                document.getElementById("result").innerText = "";
+                document.getElementById("nextWordBtn").style.display = "none";
+                document.getElementById("wordInput").style.display = "block";  
+                document.getElementById("submitBtn").style.display = "block";  
+            } else {
+                document.getElementById("result").innerText = "Congrats beh!";
+                document.getElementById("nextWordBtn").style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
